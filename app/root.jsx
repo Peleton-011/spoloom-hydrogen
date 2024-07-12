@@ -282,6 +282,7 @@ async function getLayoutData({storefront, env}) {
     },
   });
 
+  console.log('layout data', JSON.stringify(theme, undefined, 2));
   invariant(data, 'No data returned from Shopify API');
 
   /*

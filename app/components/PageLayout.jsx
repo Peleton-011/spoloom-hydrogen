@@ -22,6 +22,8 @@ import {useIsHomePath} from '~/lib/utils';
 import {useIsHydrated} from '~/hooks/useIsHydrated';
 import {useCartFetchers} from '~/hooks/useCartFetchers';
 
+import {FaChevronDown} from 'react-icons/fa6';
+
 /**
  * @param {LayoutProps}
  */
@@ -265,17 +267,43 @@ function DesktopHeader({isHome, menu, openCart, title}) {
         <nav className="flex gap-8">
           {/* Top level menu items */}
           {(menu?.items || []).map((item) => (
-            <Link
-              key={item.id}
-              to={item.to}
-              target={item.target}
-              prefetch="intent"
-              className={({isActive}) =>
-                isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
-              }
-            >
-              {item.title}
-            </Link>
+            <div className="top-menu">
+              <Link
+                key={item.id}
+                to={item.to}
+                target={item.target}
+                prefetch="intent"
+                className={({isActive}) =>
+                  isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
+                }
+              >
+                {item.title}
+                {item?.items?.length > 0 && (
+                  <>
+                    {' '}
+                    <FaChevronDown
+                      aria-hidden="true"
+                      className="inline-block align-middle pl-1 pb-1"
+                    />
+                  </>
+                )}
+              </Link>
+              <div className="drop-down">
+                {(item?.items || []).map((subitem) => (
+                  <Link
+                    key={subitem.id}
+                    to={subitem.to}
+                    target={subitem.target}
+                    prefetch="intent"
+                    className={({isActive}) =>
+                      isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
+                    }
+                  >
+                    {subitem.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
       </div>

@@ -267,7 +267,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
         <nav className="flex gap-8">
           {/* Top level menu items */}
           {(menu?.items || []).map((item) => (
-            <div className="top-menu">
+            <div className="top-menu" key={'top-menu--' + item.id}>
               <Link
                 key={item.id}
                 to={item.to}
@@ -288,7 +288,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
                   </>
                 )}
               </Link>
-              <div className="drop-down">
+              <div className="drop-down" key={'drop-down--' + item.id}>
                 {(item?.items || []).map((subitem) => (
                   <Link
                     key={subitem.id}

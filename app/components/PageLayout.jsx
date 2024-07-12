@@ -1,7 +1,7 @@
 import {useParams, Form, Await, useRouteLoaderData} from '@remix-run/react';
 import useWindowScroll from 'react-use/esm/useWindowScroll';
 import {Disclosure} from '@headlessui/react';
-import {Suspense, useEffect, useMemo} from 'react';
+import {Suspense, useEffect, useState, useMemo} from 'react';
 import {CartForm} from '@shopify/hydrogen';
 import {Text, Heading, Section} from '~/components/Text';
 import {Link} from '~/components/Link';
@@ -249,6 +249,12 @@ function MobileHeader({title, isHome, openCart, openMenu}) {
 function DesktopHeader({isHome, menu, openCart, title}) {
   const params = useParams();
   const {y} = useWindowScroll();
+
+  const [dropdownsOpen, setDropdownsOpen] = useState(
+    new Array(menu?.items.length).fill(false),
+  );
+
+  console.log(dropdownsOpen);
   return (
     <header
       role="banner"
@@ -266,7 +272,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
         </Link>
         <nav className="flex gap-8">
           {/* Top level menu items */}
-          {(menu?.items || []).map((item) => (
+          {(menu?.items || []).map((item, index) => (
             <div className="top-menu" key={'top-menu--' + item.id}>
               <Link
                 key={item.id}
@@ -276,6 +282,15 @@ function DesktopHeader({isHome, menu, openCart, title}) {
                 className={({isActive}) =>
                   isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
                 }
+                onClick={() => {
+                  if (item?.items?.length > 0) {
+                    setDropdownsOpen((prev) => {
+                      const copy = [...prev];
+                      copy[index] = !copy[index];
+                      return copy;
+                    });
+                  }
+                }}
               >
                 {item.title}
                 {item?.items?.length > 0 && (
@@ -283,7 +298,11 @@ function DesktopHeader({isHome, menu, openCart, title}) {
                     {' '}
                     <FaChevronDown
                       aria-hidden="true"
-                      className="inline-block align-middle pl-1 pb-1"
+                      className={
+                        'inline-block align-middle transition-transform ' +
+                        (dropdownsOpen[index] ? ' rotate-180 ' : ' rotate-360 ')
+                      }
+                      isActive={dropdownsOpen[index]}
                     />
                   </>
                 )}

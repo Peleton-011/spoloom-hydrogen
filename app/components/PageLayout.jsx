@@ -305,7 +305,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
 
                 <div
                   className={
-                    'drop-down absolute mt-12 p-14 w-max bg-primary/90 dark:bg-contrast/90' +
+                    'drop-down absolute mt-6 p-7 w-max bg-primary/90 dark:bg-contrast/90' +
                     (isActive ? ' visible z-1' : ' invisible -z-1')
                   }
                   key={'drop-down--' + item.id}

@@ -272,8 +272,75 @@ function DesktopHeader({isHome, menu, openCart, title}) {
         </Link>
         <nav className="flex gap-8">
           {/* Top level menu items */}
-          {(menu?.items || []).map((item, index) => (
-            <div className="top-menu" key={'top-menu--' + item.id}>
+          {(menu?.items || []).map((item, index) => {
+            const isActive = dropdownsOpen[index];
+
+            console.log(item);
+            return item?.items?.length > 0 ? (
+              <div className="top-menu relative" key={'top-menu--' + item.id}>
+                <button
+                  key={item.id}
+                  className={({isActive}) =>
+                    isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
+                  }
+                  onClick={() => {
+                    if (item?.items?.length > 0) {
+                      setDropdownsOpen((prev) => {
+                        const copy = [...prev];
+                        copy[index] = !copy[index];
+                        return copy;
+                      });
+                    }
+                  }}
+                >
+                  {item.title}{' '}
+                  <FaChevronDown
+                    aria-hidden="true"
+                    className={
+                      'inline-block align-middle transition-transform ' +
+                      (isActive ? ' rotate-180 ' : ' rotate-360 ')
+                    }
+                  />
+                </button>
+
+                <div
+                  className={
+                    'drop-down absolute mt-12 p-14 w-max bg-primary/90 dark:bg-contrast/90' +
+                    (isActive ? ' visible z-1' : ' invisible -z-1')
+                  }
+                  key={'drop-down--' + item.id}
+                >
+                  {(item?.items || []).map((subitem) => {
+                    const [isHovered, setHovered] = useState(false);
+                    return (
+                      <Link
+                        key={subitem.id}
+                        to={subitem.to}
+                        target={subitem.target}
+                        prefetch="intent"
+                        className={
+                          'block py-8 ' +
+                          (isHovered ? 'pb-1 border-b -mb-px' : 'pb-1')
+                        }
+                        onMouseEnter={() => setHovered(true)}
+                        onMouseLeave={() => setHovered(false)}
+                        onClick={() => {
+                          if (item?.items?.length > 0) {
+                            setDropdownsOpen((prev) => {
+                              const copy = [...prev];
+                              copy[index] = !copy[index];
+                              return copy;
+                            });
+                          }
+                        }}
+                      >
+                        {subitem.title}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
               <Link
                 key={item.id}
                 to={item.to}
@@ -293,37 +360,9 @@ function DesktopHeader({isHome, menu, openCart, title}) {
                 }}
               >
                 {item.title}
-                {item?.items?.length > 0 && (
-                  <>
-                    {' '}
-                    <FaChevronDown
-                      aria-hidden="true"
-                      className={
-                        'inline-block align-middle transition-transform ' +
-                        (dropdownsOpen[index] ? ' rotate-180 ' : ' rotate-360 ')
-                      }
-                      isActive={dropdownsOpen[index]}
-                    />
-                  </>
-                )}
               </Link>
-              <div className="drop-down" key={'drop-down--' + item.id}>
-                {(item?.items || []).map((subitem) => (
-                  <Link
-                    key={subitem.id}
-                    to={subitem.to}
-                    target={subitem.target}
-                    prefetch="intent"
-                    className={({isActive}) =>
-                      isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
-                    }
-                  >
-                    {subitem.title}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </nav>
       </div>
       <div className="flex items-center gap-1">

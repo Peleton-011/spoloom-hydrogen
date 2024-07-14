@@ -182,17 +182,18 @@ export function PageHeader({
   ...props
 }) {
   const variants = {
-    default: 'grid w-full gap-8 p-6 py-8 md:p-8 lg:p-12 justify-items-start',
+    default:
+      'grid gap-8 p-6 py-8 md:p-8 lg:p-12 justify-items-start left-[50%] -translate-x-1/2 ',
     blogPost:
-      'grid md:text-center w-full gap-4 p-6 py-8 md:p-8 lg:p-12 md:justify-items-center',
+      'grid md:text-center gap-4 p-6 py-8 md:p-8 lg:p-12 md:justify-items-center blogleft-[50%] -translate-x-1/2 ',
     allCollections:
-      'flex justify-between items-baseline gap-8 p-6 md:p-8 lg:p-12',
+      'flex justify-between items-baseline gap-8 p-6 md:p-8 lg:p-12 ',
   };
 
   const styles = clsx(variants[variant], className);
 
   return (
-    <header {...props} className={styles}>
+    <header {...props} className={styles + ' max-w-prose-wide relative'}>
       {heading && (
         <Heading as="h1" width="narrow" size="heading" className="inline-block">
           {heading}

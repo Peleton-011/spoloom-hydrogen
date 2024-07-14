@@ -29,6 +29,7 @@ import {FaChevronDown} from 'react-icons/fa6';
  */
 export function PageLayout({children, layout}) {
   const {headerMenu, footerMenu} = layout || {};
+  console.log(JSON.stringify(layout, undefined, 2));
   return (
     <>
       <div className="flex flex-col min-h-screen">

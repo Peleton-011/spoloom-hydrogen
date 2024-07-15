@@ -21,6 +21,44 @@ export type OrderCardFragment = Pick<
   };
 };
 
+export type ProductMediaQueryVariables = StorefrontAPI.Exact<{
+  id: StorefrontAPI.Scalars['ID']['input'];
+}>;
+
+export type ProductMediaQuery = {
+  product?: StorefrontAPI.Maybe<{
+    media: {
+      edges: Array<{
+        node:
+          | Pick<StorefrontAPI.ExternalVideo, 'mediaContentType' | 'alt'>
+          | (Pick<StorefrontAPI.MediaImage, 'mediaContentType' | 'alt'> & {
+              image?: StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Image, 'originalSrc' | 'altText'>
+              >;
+            })
+          | Pick<StorefrontAPI.Model3d, 'mediaContentType' | 'alt'>
+          | (Pick<StorefrontAPI.Video, 'mediaContentType' | 'alt'> & {
+              sources: Array<
+                Pick<StorefrontAPI.VideoSource, 'url' | 'mimeType'>
+              >;
+            });
+      }>;
+    };
+  }>;
+};
+
+export type VideosCategoryProductsQueryVariables = StorefrontAPI.Exact<{
+  [key: string]: never;
+}>;
+
+export type VideosCategoryProductsQuery = {
+  products: {
+    edges: Array<{
+      node: Pick<StorefrontAPI.Product, 'id' | 'title' | 'handle'>;
+    }>;
+  };
+};
+
 type Media_ExternalVideo_Fragment = {__typename: 'ExternalVideo'} & Pick<
   StorefrontAPI.ExternalVideo,
   'id' | 'embedUrl' | 'host' | 'mediaContentType' | 'alt'
@@ -678,6 +716,53 @@ export type CollectionsQuery = {
   };
 };
 
+export type CoursesCollectionQueryVariables = StorefrontAPI.Exact<{
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+  first?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
+  last?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
+  startCursor?: StorefrontAPI.InputMaybe<
+    StorefrontAPI.Scalars['String']['input']
+  >;
+  endCursor?: StorefrontAPI.InputMaybe<
+    StorefrontAPI.Scalars['String']['input']
+  >;
+}>;
+
+export type CoursesCollectionQuery = {
+  collection?: StorefrontAPI.Maybe<
+    Pick<
+      StorefrontAPI.Collection,
+      'id' | 'title' | 'description' | 'handle'
+    > & {
+      products: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.Product,
+            'id' | 'title' | 'description' | 'handle'
+          > & {
+            featuredImage?: StorefrontAPI.Maybe<
+              Pick<
+                StorefrontAPI.Image,
+                'id' | 'url' | 'width' | 'height' | 'altText'
+              >
+            >;
+            metafields: Array<
+              StorefrontAPI.Maybe<
+                Pick<StorefrontAPI.Metafield, 'key' | 'value'>
+              >
+            >;
+          }
+        >;
+        pageInfo: Pick<
+          StorefrontAPI.PageInfo,
+          'hasPreviousPage' | 'hasNextPage' | 'startCursor' | 'endCursor'
+        >;
+      };
+    }
+  >;
+};
+
 export type FeaturedItemsQueryVariables = StorefrontAPI.Exact<{
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
   language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
@@ -1249,6 +1334,14 @@ export type SitemapsQuery = {
 };
 
 interface GeneratedQueryTypes {
+  '\n  query ProductMedia($id: ID!) {\n    product(id: $id) {\n      media(first: 10) {\n        edges {\n          node {\n            mediaContentType\n            alt\n            ... on MediaImage {\n              image {\n                originalSrc\n                altText\n              }\n            }\n            ... on Video {\n              sources {\n                url\n                mimeType\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+    return: ProductMediaQuery;
+    variables: ProductMediaQueryVariables;
+  };
+  '\n  query VideosCategoryProducts {\n    products(first: 20, query: "tag:Videos") {\n      edges {\n        node {\n          id\n          title\n          handle\n        }\n      }\n    }\n  }\n': {
+    return: VideosCategoryProductsQuery;
+    variables: VideosCategoryProductsQueryVariables;
+  };
   '#graphql\n  query layout(\n    $language: LanguageCode\n    $headerMenuHandle: String!\n    $footerMenuHandle: String!\n  ) @inContext(language: $language) {\n    shop {\n      ...Shop\n    }\n    headerMenu: menu(handle: $headerMenuHandle) {\n      ...Menu\n    }\n    footerMenu: menu(handle: $footerMenuHandle) {\n      ...Menu\n    }\n  }\n  fragment Shop on Shop {\n    id\n    name\n    description\n    primaryDomain {\n      url\n    }\n    brand {\n      logo {\n        image {\n          url\n        }\n      }\n    }\n  }\n  fragment MenuItem on MenuItem {\n    id\n    resourceId\n    tags\n    title\n    type\n    url\n  }\n  fragment ChildMenuItem on MenuItem {\n    ...MenuItem\n  }\n  fragment ParentMenuItem on MenuItem {\n    ...MenuItem\n    items {\n      ...ChildMenuItem\n    }\n  }\n  fragment Menu on Menu {\n    id\n    items {\n      ...ParentMenuItem\n    }\n  }\n': {
     return: LayoutQuery;
     variables: LayoutQueryVariables;
@@ -1284,6 +1377,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query Collections(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collections(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n      nodes {\n        id\n        title\n        description\n        handle\n        seo {\n          description\n          title\n        }\n        image {\n          id\n          url\n          width\n          height\n          altText\n        }\n      }\n      pageInfo {\n        hasPreviousPage\n        hasNextPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n': {
     return: CollectionsQuery;
     variables: CollectionsQueryVariables;
+  };
+  '#graphql\n  query CoursesCollection(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: "courses") {\n      id\n      title\n      description\n      handle\n      products(first: $first, last: $last, before: $startCursor, after: $endCursor) {\n        nodes {\n          id\n          title\n          description\n          handle\n          featuredImage {\n            id\n            url\n            width\n            height\n            altText\n          }\n          metafields(\n            identifiers: [\n              {namespace: "custom", key: "video_count"},\n              {namespace: "custom", key: "duration"}\n            ]\n          ) {\n            key\n            value\n          }\n        }\n        pageInfo {\n          hasPreviousPage\n          hasNextPage\n          startCursor\n          endCursor\n        }\n      }\n    }\n  }\n': {
+    return: CoursesCollectionQuery;
+    variables: CoursesCollectionQueryVariables;
   };
   '#graphql\n  query FeaturedItems(\n    $country: CountryCode\n    $language: LanguageCode\n    $pageBy: Int = 12\n  ) @inContext(country: $country, language: $language) {\n    featuredCollections: collections(first: 3, sortKey: UPDATED_AT) {\n      nodes {\n        ...FeaturedCollectionDetails\n      }\n    }\n    featuredProducts: products(first: $pageBy) {\n      nodes {\n        ...ProductCard\n      }\n    }\n  }\n\n  #graphql\n  fragment ProductCard on Product {\n    id\n    title\n    publishedAt\n    handle\n    vendor\n    variants(first: 1) {\n      nodes {\n        id\n        availableForSale\n        image {\n          url\n          altText\n          width\n          height\n        }\n        price {\n          amount\n          currencyCode\n        }\n        compareAtPrice {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n        product {\n          handle\n          title\n        }\n      }\n    }\n  }\n\n  #graphql\n  fragment FeaturedCollectionDetails on Collection {\n    id\n    title\n    handle\n    image {\n      altText\n      width\n      height\n      url\n    }\n  }\n\n': {
     return: FeaturedItemsQuery;

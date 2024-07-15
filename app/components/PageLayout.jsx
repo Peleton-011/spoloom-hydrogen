@@ -281,9 +281,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
               <div className="top-menu relative" key={'top-menu--' + item.id}>
                 <button
                   key={item.id}
-                  className={({isActive}) =>
-                    isActive ? 'pb-1 border-b -mb-px' : 'pb-1'
-                  }
+                  className={isActive ? 'pb-1 border-b -mb-px' : 'pb-1'}
                   onClick={() => {
                     if (item?.items?.length > 0) {
                       setDropdownsOpen((prev) => {

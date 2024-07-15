@@ -82,7 +82,7 @@ function CourseCard({course, loading}) {
   return (
     <Link
       prefetch="viewport"
-      to={`/products/${course.handle}`}
+      to={`/courses/${course.handle}`}
       className="grid gap-4"
     >
       <div className="card-image bg-primary/5 aspect-[3/2]">

@@ -29,7 +29,7 @@ import {FaChevronDown} from 'react-icons/fa6';
  */
 export function PageLayout({children, layout}) {
   const {headerMenu, footerMenu} = layout || {};
-  console.log(JSON.stringify(layout, undefined, 2));
+//   console.log(JSON.stringify(layout, undefined, 2));
   return (
     <>
       <div className="flex flex-col min-h-screen">
@@ -255,7 +255,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
     new Array(menu?.items.length).fill(false),
   );
 
-  console.log(dropdownsOpen);
+//   console.log(dropdownsOpen);
   return (
     <header
       role="banner"
@@ -276,7 +276,7 @@ function DesktopHeader({isHome, menu, openCart, title}) {
           {(menu?.items || []).map((item, index) => {
             const isActive = dropdownsOpen[index];
 
-            console.log(item);
+            // console.log(item);
             return item?.items?.length > 0 ? (
               <div className="top-menu relative" key={'top-menu--' + item.id}>
                 <button

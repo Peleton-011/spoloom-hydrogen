@@ -4,14 +4,13 @@ import {Image} from '@shopify/hydrogen';
 import {VideoPlayer} from '~/components/VideoPlayer';
 import {Curriculum} from '~/components/Curriculum';
 
-export const loader = async ({params, context: {storefront}, request}) => {
-  console.log('loader', params ? params : ' no params');
+export const loader = async ({params, context, request}) => {
   const {courseHandle} = params;
-  const {product: course} = await storefront.query(COURSE_QUERY, {
+  const {product: course} = await context.storefront.query(COURSE_QUERY, {
     variables: {
       handle: courseHandle,
-      country: storefront.i18n.country,
-      language: storefront.i18n.language,
+      country: context.storefront.i18n.country,
+      language: context.storefront.i18n.language,
     },
   });
 
@@ -29,16 +28,16 @@ export const loader = async ({params, context: {storefront}, request}) => {
   });
 };
 
-export const action = async ({request, params, context: {storefront}}) => {
+export const action = async ({request, params, context}) => {
   const {courseHandle} = params;
   const formData = await request.formData();
   const password = formData.get('password');
 
-  const {product: course} = await storefront.query(COURSE_QUERY, {
+  const {product: course} = await context.storefront.query(COURSE_QUERY, {
     variables: {
       handle: courseHandle,
-      country: storefront.i18n.country,
-      language: storefront.i18n.language,
+      country: context.storefront.i18n.country,
+      language: context.storefront.i18n.language,
     },
   });
 

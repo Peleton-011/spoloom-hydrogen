@@ -44,6 +44,9 @@ export const meta = ({matches}) => {
 export default function Courses() {
   const {collection} = useLoaderData();
 
+  console.log('collection');
+  console.log(JSON.stringify(collection, null, 2));
+
   return (
     <>
       <PageHeader heading="Courses" />
@@ -79,6 +82,8 @@ export default function Courses() {
 }
 
 function CourseCard({course, loading}) {
+  console.log('course');
+  console.log(JSON.stringify(course, null, 2));
   return (
     <Link
       prefetch="viewport"

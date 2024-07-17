@@ -19,7 +19,9 @@ const PAGINATION_SIZE = 4;
 
 export const headers = routeHeaders;
 
-export const loader = async ({request, context: {storefront}}) => {
+export const loader = async ({request, context}) => {
+  const storefront = context.storefront;
+
   const variables = getPaginationVariables(request, {pageBy: PAGINATION_SIZE});
   const {collection} = await storefront.query(COURSES_QUERY, {
     variables: {

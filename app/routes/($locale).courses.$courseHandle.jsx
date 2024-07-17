@@ -18,9 +18,10 @@ export const loader = async ({params, context, request}) => {
     throw new Response(null, {status: 404});
   }
 
-  // Check if the user has already entered the correct password
-  const session = await context.session.get();
-  const hasAccess = session.get(`course_${course.id}_access`) === true;
+  const session = context.session;
+  const hasAccess = session.hasCourseAccess(course.id);
+
+  console.log(JSON.stringify(course, null, 2));
 
   return json({
     course,
@@ -41,17 +42,18 @@ export const action = async ({request, params, context}) => {
     },
   });
 
-  const coursePassword = course.metafields.find(
-    (m) => m.key === 'course_password',
-  )?.value;
+  console.log(course);
+  const coursePassword = course.course_password?.value || 'ass';
+
+  const session = context.session;
 
   if (password === coursePassword) {
     // Password is correct, grant access
-    const session = await context.session.get();
-    session.set(`course_${course.id}_access`, true);
+    session.grantCourseAccess(course.id);
+
     return redirect(`/courses/${courseHandle}`, {
       headers: {
-        'Set-Cookie': await context.session.commit(),
+        'Set-Cookie': await session.commit(),
       },
     });
   } else {
@@ -115,10 +117,15 @@ export default function CourseRoute() {
 
         <div className="sticky md:mt-8 top-24 grid gap-6">
           <VideoPlayer
-            videoUrl={
-              course.metafields.find((m) => m.key === 'preview_video')?.value
-            }
+            light={true}
+            config={{
+              youtube: {
+                playerVars: {showinfo: 1},
+              },
+            }}
+            videoUrl={'https://www.youtube.com/watch?v=dQw4w9WgXcQ'}
           />
+          {typeof course.preview_video.reference.sources[0].url}
         </div>
       </div>
     </div>
@@ -139,16 +146,63 @@ const COURSE_QUERY = `#graphql
         width
         height
       }
-      metafields(
-        identifiers: [
-          {namespace: "custom", key: "course_password"},
-          {namespace: "custom", key: "preview_video"},
-          {namespace: "custom", key: "curriculum"}
-        ]
+      course_password:
+      metafield(
+        namespace: "courses", 
+        key: "course_password"
       ) {
-        key
         value
+        type
       }
+      preview_video: metafield(
+        namespace: "courses", 
+        key: "preview_video"
+      ) {
+        value
+        reference {
+          ... on Video {
+            alt
+            previewImage {
+                altText
+                url
+            }
+            sources {
+              mimeType
+              url
+            }
+          }
+        }
+      }
+      curriculum: metafield(
+        namespace: "courses", 
+        key: "curriculum"
+      ) {
+        value
+        reference {
+            ... on Metaobject {
+                fields {
+                    key
+                    value
+                }
+            }
+        }
+      }
+    
     }
   }
+`;
+
+`
+title
+description
+sections {
+  title
+  description
+  lessons {
+    title
+    description
+    duration
+
+  }
+}
 `;

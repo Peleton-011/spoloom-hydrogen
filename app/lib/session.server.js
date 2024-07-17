@@ -1,33 +1,15 @@
 import {createCookieSessionStorage} from '@shopify/remix-oxygen';
 
-/**
- * This is a custom session implementation for your Hydrogen shop.
- * Feel free to customize it to your needs, add helper methods, or
- * swap out the cookie-based implementation with something else!
- */
 export class AppSession {
-  /**
-   * @public
-   * @default false
-   */
   isPending = false;
   #sessionStorage;
   #session;
 
-  /**
-   * @param {SessionStorage} sessionStorage
-   * @param {Session} session
-   */
   constructor(sessionStorage, session) {
     this.#sessionStorage = sessionStorage;
     this.#session = session;
   }
 
-  /**
-   * @static
-   * @param {Request} request
-   * @param {string[]} secrets
-   */
   static async init(request, secrets) {
     const storage = createCookieSessionStorage({
       cookie: {
@@ -36,6 +18,7 @@ export class AppSession {
         path: '/',
         sameSite: 'lax',
         secrets,
+        maxAge: 30 * 24 * 60 * 60, // 30 days
       },
     });
 
@@ -51,7 +34,21 @@ export class AppSession {
   }
 
   get get() {
-    return this.#session.get;
+    return (key) => {
+      const value = this.#session.get(key);
+      if (key.startsWith('course_') && key.endsWith('_access')) {
+        if (value && value.granted) {
+          // Check if access has expired
+          if (Date.now() - value.grantedAt < 30 * 24 * 60 * 60 * 1000) {
+            return value;
+          } else {
+            this.unset(key);
+            return undefined;
+          }
+        }
+      }
+      return value;
+    };
   }
 
   get flash() {
@@ -65,7 +62,15 @@ export class AppSession {
 
   get set() {
     this.isPending = true;
-    return this.#session.set;
+    return (key, value) => {
+      if (key.startsWith('course_') && key.endsWith('_access')) {
+        value = {
+          granted: value,
+          grantedAt: Date.now()
+        };
+      }
+      return this.#session.set(key, value);
+    };
   }
 
   destroy() {
@@ -75,6 +80,23 @@ export class AppSession {
   commit() {
     this.isPending = false;
     return this.#sessionStorage.commitSession(this.#session);
+  }
+
+  grantCourseAccess(courseId) {
+    this.set(`course_${courseId}_access`, true);
+  }
+
+  revokeCourseAccess(courseId) {
+    this.unset(`course_${courseId}_access`);
+  }
+
+  hasCourseAccess(courseId) {
+    const accessData = this.get(`course_${courseId}_access`);
+    return accessData?.granted && (Date.now() - accessData.grantedAt < 30 * 24 * 60 * 60 * 1000);
+  }
+
+  getAccessibleCourses(allCourses) {
+    return allCourses.filter(course => this.hasCourseAccess(course.id));
   }
 }
 

@@ -2,6 +2,7 @@ import {json, redirect} from '@shopify/remix-oxygen';
 import {useLoaderData, useActionData, Form} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
 import {VideoPlayer} from '~/components/VideoPlayer';
+import {Video} from '@shopify/hydrogen';
 import {Curriculum} from '~/components/Curriculum';
 
 export const loader = async ({params, context, request}) => {
@@ -20,6 +21,8 @@ export const loader = async ({params, context, request}) => {
 
   const session = context.session;
   const hasAccess = session.hasCourseAccess(course.id);
+
+  console.log('#####################################################');
 
   console.log(JSON.stringify(course, null, 2));
 
@@ -116,16 +119,35 @@ export default function CourseRoute() {
         </div>
 
         <div className="sticky md:mt-8 top-24 grid gap-6">
-          <VideoPlayer
-            light={true}
-            config={{
-              youtube: {
-                playerVars: {showinfo: 1},
-              },
-            }}
-            videoUrl={'https://www.youtube.com/watch?v=dQw4w9WgXcQ'}
-          />
-          {typeof course.preview_video.reference.sources[0].url}
+          <Video data={course.preview_video?.reference} controls="true" />
+
+          <div
+            class="_MediaContainer_3mr5a_1 _MediaContainer--Video_3mr5a_1"
+            // style="min-height: 200px; max-height: 300px; --media-aspect-ratio: 1.7777777777777777;"
+          >
+            <video
+              class="_Media_3mr5a_1"
+              controls="true"
+              //   poster="https://cdn.shopify.com/s/files/1/0697/6847/8952/files/preview_images/f8168498ec914e6a9b31adac4f96902c.thumbnail.0000000000.jpg?v=1721031210"
+            >
+              <source
+                src={
+                  'https://spoloom.myshopify.com/cdn/shop/videos/c/vp/f8168498ec914e6a9b31adac4f96902c/f8168498ec914e6a9b31adac4f96902c.HD-720p-1.6Mbps-31767669.mp4' ||
+                  'https://cdn.shopify.com/videos/c/o/v/f8168498ec914e6a9b31adac4f96902c.mp4'
+                }
+              ></source>
+            </video>
+          </div>
+          <pre>{JSON.stringify(course.curriculum, null, 2)}</pre>
+          {false && 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'}
+          {false && (
+            <VideoPlayer
+              videoData={course.preview_video?.reference}
+              previewVideoData={course.preview_video?.reference}
+              isPreview={false}
+              onEnded={() => console.log('Video ended')}
+            />
+          )}
         </div>
       </div>
     </div>
@@ -161,14 +183,14 @@ const COURSE_QUERY = `#graphql
         value
         reference {
           ... on Video {
-            alt
-            previewImage {
-                altText
-                url
-            }
+            id
+            mediaContentType
             sources {
-              mimeType
               url
+              mimeType
+              format
+              height
+              width
             }
           }
         }
@@ -180,9 +202,64 @@ const COURSE_QUERY = `#graphql
         value
         reference {
             ... on Metaobject {
-                fields {
-                    key
+                title: field (key: "title") {
                     value
+                }
+                sections: field (key: "sections") {
+                    value
+                    references(first: 10) {
+                        edges {
+                            node {
+                        ... on Metaobject {
+                            title: field (key: "title") {
+                                value
+                            }
+                            description: field (key: "description") {
+                                value
+                            }
+                            lessons: field (key: "lessons") {
+                                value
+                                references(first: 20) {
+                                    edges {
+                                        node {
+                                    ... on Metaobject {
+                                        title: field (key: "title") {
+                                            value
+                                        }
+                                        description: field (key: "description") {
+                                            value
+                                        }
+                                        duration: field (key: "duration") {
+                                            value
+                                        }
+                                        video: field (key: "video") {
+                                            value
+                                            reference {
+                                                ... on Video {
+                                                    id
+                                                    mediaContentType
+                                                    sources {
+                                                        url
+                                                        mimeType
+                                                        format
+                                                        height
+                                                        width
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                        }
+                    }
+                }
+                description: field (key: "description") {
+                  value
                 }
             }
         }

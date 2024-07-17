@@ -13,7 +13,7 @@ export default defineConfig({
   ],
   ssr: {
     optimizeDeps: {
-      include: ['typographic-base'],
+      include: ['video-react', 'typographic-base'],
     },
   },
   optimizeDeps: {
@@ -25,6 +25,7 @@ export default defineConfig({
       'react-use/esm/useScroll',
       'react-use/esm/useDebounce',
       'react-use/esm/useWindowScroll',
+      'video-react',
     ],
   },
   build: {

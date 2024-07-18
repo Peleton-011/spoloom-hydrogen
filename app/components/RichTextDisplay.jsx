@@ -1,6 +1,6 @@
 import {convertSchemaToHtml} from '@thebeyondgroup/shopify-rich-text-renderer';
 
-export default function RichTextDisplay({content}) {
+export function RichTextDisplay({content}) {
 //   console.log(content);
   const htmlContent = content
     ? convertSchemaToHtml(content, {

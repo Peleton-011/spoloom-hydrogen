@@ -4,6 +4,7 @@ import {Player} from 'video-react';
 import {Curriculum} from '~/components/Curriculum';
 import COURSE_QUERY from '~/custom-utils/COURSE_QUERY';
 import {parseMetaobject} from '~/custom-utils/parseCourse';
+import generateSlug from '~/custom-utils/generateSlug';
 
 export const loader = async ({params, context, request}) => {
   const {courseHandle, sectionHandle, lessonHandle} = params;
@@ -28,32 +29,32 @@ export const loader = async ({params, context, request}) => {
 
   const curriculum = parseMetaobject(course.curriculum?.reference);
   const currentSection = curriculum.sections.find(
-    (section) =>
-      section.title.toLowerCase().replace(/\s+/g, '-') === sectionHandle,
+    (section) => generateSlug(section.title) === sectionHandle,
   );
 
   if (!currentSection) {
+    console.log('no currentSection');
     throw new Response(null, {status: 404});
   }
 
   const currentLesson = currentSection.lessons.find(
-    (lesson) =>
-      lesson.title.toLowerCase().replace(/\s+/g, '-') === lessonHandle,
+    (lesson) => generateSlug(lesson.title) === lessonHandle,
   );
 
   if (!currentLesson) {
+    console.log('no currentLesson');
     throw new Response(null, {status: 404});
   }
 
   return json({
-    course,
-    currentSection,
-    currentLesson,
+    course: {...course, courseHandle},
+    currentSection: {...currentSection, sectionHandle},
+    currentLesson: {...currentLesson, lessonHandle},
     curriculum,
   });
 };
 
-export default function CourseLessonRoute() {
+export default function CourseLesson() {
   const {course, currentSection, currentLesson, curriculum} = useLoaderData();
 
   return (

@@ -31,33 +31,33 @@ export const loader = async ({params, context, request}) => {
   //   );
 
   // If no section is selected, default to the first section
-  if (
-    !currentSectionHandle &&
-    course.curriculum?.reference?.sections?.references?.edges?.length > 0
-  ) {
-    currentSectionHandle =
-      course.curriculum.reference.sections.references.edges[0].node.title.value
-        .toLowerCase()
-        .replace(/\s+/g, '-');
-  }
+    // if (
+    //   !currentSectionHandle &&
+    //   course.curriculum?.reference?.sections?.references?.edges?.length > 0
+    // ) {
+    //   currentSectionHandle =
+    //     course.curriculum.reference.sections.references.edges[0].node.title.value
+    //       .toLowerCase()
+    //       .replace(/\s+/g, '-');
+    // }
   //   console.log(currentSectionHandle);
 
   // If a section is selected but no lesson, default to the first lesson of that section
-  if (currentSectionHandle && !currentLessonHandle) {
-    const currentSection =
-      course.curriculum?.reference?.sections?.references?.edges.find(
-        (edge) =>
-          edge.node.title.value.toLowerCase().replace(/\s+/g, '-') ===
-          currentSectionHandle,
-      );
+  //   if (currentSectionHandle && !currentLessonHandle) {
+  //     const currentSection =
+  //       course.curriculum?.reference?.sections?.references?.edges.find(
+  //         (edge) =>
+  //           edge.node.title.value.toLowerCase().replace(/\s+/g, '-') ===
+  //           currentSectionHandle,
+  //       );
 
-    if (currentSection?.node?.lessons?.references?.edges?.length > 0) {
-      currentLessonHandle =
-        currentSection.node.lessons.references.edges[0].node.title.value
-          .toLowerCase()
-          .replace(/\s+/g, '-');
-    }
-  }
+  //     if (currentSection?.node?.lessons?.references?.edges?.length > 0) {
+  //       currentLessonHandle =
+  //         currentSection.node.lessons.references.edges[0].node.title.value
+  //           .toLowerCase()
+  //           .replace(/\s+/g, '-');
+  //     }
+  //   }
 
   //   console.log('#####################################################');
   //
@@ -104,6 +104,37 @@ export const action = async ({request, params, context}) => {
   }
 };
 
+function getContent(course, currentSectionHandle, currentLessonHandle) {
+  return (
+    <div className="grid gap-8 md:col-span-2">
+      <div className="grid gap-4">
+        <h1 className="text-4xl font-bold leading-tight">{course.title}</h1>
+      </div>
+
+      {currentSectionHandle && currentLessonHandle ? (
+        <LessonContent
+          course={course}
+          sectionHandle={currentSectionHandle}
+          lessonHandle={currentLessonHandle}
+        />
+      ) : currentSectionHandle ? (
+        <SectionContent course={course} sectionHandle={currentSectionHandle} />
+      ) : (
+        <>
+          <div>
+            <Image
+              data={course.featuredImage}
+              sizes="(min-width: 64em) 60vw, (min-width: 48em) 50vw, 90vw"
+            />
+          </div>
+
+          <div dangerouslySetInnerHTML={{__html: course.descriptionHtml}} />
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function CourseRoute() {
   const {course, hasAccess, currentSectionHandle, currentLessonHandle} =
     useLoaderData();
@@ -141,41 +172,8 @@ export default function CourseRoute() {
   return (
     <div className="grid gap-8 px-6 md:px-8 lg:px-12">
       <div className="grid items-start gap-6 lg:gap-20 md:grid-cols-2 lg:grid-cols-3">
-        <div className="grid gap-8 md:col-span-2">
-          <div className="grid gap-4">
-            <h1 className="text-4xl font-bold leading-tight">{course.title}</h1>
-          </div>
-
-          <div>
-            <Image
-              data={course.featuredImage}
-              sizes="(min-width: 64em) 60vw, (min-width: 48em) 50vw, 90vw"
-            />
-          </div>
-
-          <div dangerouslySetInnerHTML={{__html: course.descriptionHtml}} />
-
-          {currentSectionHandle && currentLessonHandle ? (
-            <LessonContent
-              course={course}
-              sectionHandle={currentSectionHandle}
-              lessonHandle={currentLessonHandle}
-            />
-          ) : currentSectionHandle ? (
-            <SectionContent
-              course={course}
-              sectionHandle={currentSectionHandle}
-            />
-          ) : (
-            <Curriculum
-              course={course}
-              currentSectionHandle={currentSectionHandle}
-              currentLessonHandle={currentLessonHandle}
-            />
-          )}
-        </div>
-
         <div className="sticky md:mt-8 top-24 grid gap-6">
+          {getContent(course, currentSectionHandle, currentLessonHandle)}
           <Curriculum
             course={course}
             currentSectionHandle={currentSectionHandle}

@@ -3,6 +3,7 @@ import {useLoaderData, Link} from '@remix-run/react';
 import {Curriculum} from '~/components/Curriculum';
 import COURSE_QUERY from '~/custom-utils/COURSE_QUERY';
 import {parseMetaobject} from '~/custom-utils/parseCourse';
+import generateSlug from '~/custom-utils/generateSlug';
 
 export const loader = async ({params, context, request}) => {
   const {courseHandle, sectionHandle} = params;
@@ -36,13 +37,13 @@ export const loader = async ({params, context, request}) => {
   }
 
   return json({
-    course,
-    currentSection,
+    course: {...course, courseHandle},
+    section: {...currentSection, sectionHandle},
     curriculum,
   });
 };
 
-export default function CourseSectionRoute() {
+export default function CourseSection() {
   const {course, currentSection, curriculum} = useLoaderData();
 
   return (
@@ -57,9 +58,9 @@ export default function CourseSectionRoute() {
             {currentSection.lessons.map((lesson, index) => (
               <li key={index} className="mb-2">
                 <Link
-                  to={`/courses/${course.handle}/${sectionHandle}/${lesson.title
-                    .toLowerCase()
-                    .replace(/\s+/g, '-')}`}
+                  to={`/courses/${course.handle}/${sectionHandle}/${generateSlug(
+                    lesson.title,
+                  )}`}
                 >
                   {lesson.title} ({lesson.duration} mins)
                 </Link>

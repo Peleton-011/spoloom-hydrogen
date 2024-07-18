@@ -1,11 +1,10 @@
 import React from 'react';
-import {Link} from '@shopify/hydrogen';
+import {Link} from '~/components/Link';
+import generateSlug from '~/custom-utils/generateSlug';
 
 export function SectionContent({course, sectionHandle}) {
   const section = course.curriculum.reference.sections.references.edges.find(
-    (edge) =>
-      edge.node.title.value.toLowerCase().replace(/\s+/g, '-') ===
-      sectionHandle,
+    (edge) => generateSlug(edge.node.title.value) === sectionHandle,
   )?.node;
 
   console.log(section);
@@ -25,11 +24,9 @@ export function SectionContent({course, sectionHandle}) {
         {lessons.map(({node: lesson}) => (
           <li key={lesson.title.value} className="mb-2">
             <Link
-              to={`/courses/${
-                course.handle
-              }/${sectionHandle}/${lesson.title.value
-                .toLowerCase()
-                .replace(/\s+/g, '-')}`}
+              to={`/courses/${course.handle}/${sectionHandle}/${generateSlug(
+                lesson.title.value,
+              )}`}
             >
               {lesson.title.value} ({lesson.duration.value} mins)
             </Link>

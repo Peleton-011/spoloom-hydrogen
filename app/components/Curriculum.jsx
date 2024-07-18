@@ -3,6 +3,7 @@ import {Player} from 'video-react';
 import {RichTextDisplay} from './RichTextDisplay';
 import {Link} from '~/components/Link';
 import {parseMetaobject} from '~/custom-utils/parseCourse';
+import generateSlug from '~/custom-utils/generateSlug';
 
 export function Curriculum({
   course,
@@ -22,16 +23,15 @@ export function Curriculum({
         <div key={section.title.value} className="mb-4">
           <h3
             className={`text-xl font-semibold mb-2 ${
-              section.title.value.toLowerCase().replace(/\s+/g, '-') ===
-              currentSectionHandle
+              generateSlug(section.title.value) === currentSectionHandle
                 ? 'text-blue-500'
                 : ''
             }`}
           >
             <Link
-              to={`/courses/${course.handle}/${section.title.value
-                .toLowerCase()
-                .replace(/\s+/g, '-')}`}
+              to={`/courses/${course.handle}/${generateSlug(
+                section.title.value,
+              )}`}
             >
               {section.title.value}
             </Link>
@@ -41,20 +41,18 @@ export function Curriculum({
               <li
                 key={lesson.title.value}
                 className={`mb-1 ${
-                  lesson.title.value.toLowerCase().replace(/\s+/g, '-') ===
-                  currentLessonHandle
+                  generateSlug(lesson.title.value) === currentLessonHandle
                     ? 'font-bold'
                     : ''
                 }`}
               >
                 <Link
-                  to={`/courses/${course.handle}/${section.title.value
-                    .toLowerCase()
-                    .replace(/\s+/g, '-')}/${lesson.title.value
-                    .toLowerCase()
-                    .replace(/\s+/g, '-')}`}
+                  to={`/courses/${course.handle}/${generateSlug(
+                    section.title.value,
+                  )}/${generateSlug(lesson.title.value)}`}
                 >
-                  {lesson.title.value} ({lesson.duration.value} mins)
+                  {lesson.title.value} ({Math.round(lesson.duration.value / 60)}{' '}
+                  mins)
                 </Link>
               </li>
             ))}

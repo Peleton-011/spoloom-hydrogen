@@ -15,7 +15,7 @@ export function VideoPlayer({
   const videoRef = useRef(null);
 
   const handleLoadedMetadata = useCallback((event) => {
-    console.log('Loaded metadata ', event.target.duration);
+    // console.log('Loaded metadata ', event.target.duration);
     setDuration(event.target.duration);
   }, []);
 

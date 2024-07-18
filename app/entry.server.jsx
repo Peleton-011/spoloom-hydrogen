@@ -24,7 +24,7 @@ export default async function handleRequest(
     },
     connectSrc: [
       // (ie. 'wss://<your-ngrok-domain>.app:*')
-      'wss://457e-91-221-149-114.ngrok-free.app:*',
+      'wss://7d02-91-221-149-114.ngrok-free.app:*',
     ],
   });
 

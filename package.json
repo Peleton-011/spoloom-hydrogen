@@ -27,6 +27,7 @@
     "@shopify/hydrogen": "^2024.7.1",
     "@shopify/polaris": "^13.7.0",
     "@shopify/remix-oxygen": "^2.0.5",
+    "@thebeyondgroup/shopify-rich-text-renderer": "^2.0.1",
     "clsx": "^1.2.1",
     "cross-env": "^7.0.3",
     "graphql": "^16.6.0",

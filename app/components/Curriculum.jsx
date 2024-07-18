@@ -1,5 +1,6 @@
 import React from 'react';
 import {Player} from 'video-react';
+import {RichTextDisplay} from './RichTextDisplay';
 
 function changeUrl(url) {
   const parts = url.split('/');

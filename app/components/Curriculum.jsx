@@ -18,7 +18,9 @@ export function Curriculum({
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">Course Curriculum</h2>
+      <Link to={`/courses/${course.handle}`}>
+        <h2 className="text-2xl font-bold mb-4">Course Curriculum</h2>
+      </Link>
       {curriculumReference.sections.references.edges.map(({node: section}) => (
         <div key={section.title.value} className="mb-4">
           <h3

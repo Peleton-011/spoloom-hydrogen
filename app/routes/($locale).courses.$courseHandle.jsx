@@ -1,9 +1,12 @@
 import {json, redirect} from '@shopify/remix-oxygen';
 import {useLoaderData, useActionData, Form} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
+
 import {Curriculum} from '~/components/Curriculum';
 import {SectionContent} from '~/components/SectionContent';
 import {LessonContent} from '~/components/LessonContent';
+import {Link} from '~/components/Link';
+
 import COURSE_QUERY from '~/custom-utils/COURSE_QUERY';
 
 export const loader = async ({params, context, request}) => {
@@ -25,43 +28,6 @@ export const loader = async ({params, context, request}) => {
 
   let currentSectionHandle = sectionHandle || '';
   let currentLessonHandle = lessonHandle || '';
-
-  //   console.log(
-  //     course.curriculum.reference.sections.references.edges[0].node.title.value,
-  //   );
-
-  // If no section is selected, default to the first section
-    // if (
-    //   !currentSectionHandle &&
-    //   course.curriculum?.reference?.sections?.references?.edges?.length > 0
-    // ) {
-    //   currentSectionHandle =
-    //     course.curriculum.reference.sections.references.edges[0].node.title.value
-    //       .toLowerCase()
-    //       .replace(/\s+/g, '-');
-    // }
-  //   console.log(currentSectionHandle);
-
-  // If a section is selected but no lesson, default to the first lesson of that section
-  //   if (currentSectionHandle && !currentLessonHandle) {
-  //     const currentSection =
-  //       course.curriculum?.reference?.sections?.references?.edges.find(
-  //         (edge) =>
-  //           edge.node.title.value.toLowerCase().replace(/\s+/g, '-') ===
-  //           currentSectionHandle,
-  //       );
-
-  //     if (currentSection?.node?.lessons?.references?.edges?.length > 0) {
-  //       currentLessonHandle =
-  //         currentSection.node.lessons.references.edges[0].node.title.value
-  //           .toLowerCase()
-  //           .replace(/\s+/g, '-');
-  //     }
-  //   }
-
-  //   console.log('#####################################################');
-  //
-  //   console.log(JSON.stringify(course, null, 2));
 
   return json({
     course: {...course, handle: courseHandle},
@@ -108,7 +74,9 @@ function getContent(course, currentSectionHandle, currentLessonHandle) {
   return (
     <div className="grid gap-8 md:col-span-2">
       <div className="grid gap-4">
-        <h1 className="text-4xl font-bold leading-tight">{course.title}</h1>
+        <Link to={`/courses/${course.handle}`}>
+          <h1 className="text-4xl font-bold leading-tight">{course.title}</h1>
+        </Link>
       </div>
 
       {currentSectionHandle && currentLessonHandle ? (

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from '~/components/Link';
 import generateSlug from '~/custom-utils/generateSlug';
+import {RichTextDisplay} from './RichTextDisplay';
 
 export function SectionContent({course, sectionHandle}) {
   const section = course.curriculum.reference.sections.references.edges.find(
@@ -19,7 +20,7 @@ export function SectionContent({course, sectionHandle}) {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">{section.title.value}</h2>
-      <p>{section.description.value}</p>
+      <RichTextDisplay content={section.description.value} />
       <ul className="mt-4">
         {lessons.map(({node: lesson}) => (
           <li key={lesson.title.value} className="mb-2">

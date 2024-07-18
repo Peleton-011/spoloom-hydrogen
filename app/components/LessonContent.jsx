@@ -2,6 +2,7 @@ import React from 'react';
 import {Player} from 'video-react';
 import changeUrl from '~/custom-utils/changeUrl';
 import generateSlug from '~/custom-utils/generateSlug';
+import {RichTextDisplay} from './RichTextDisplay';
 
 export function LessonContent({course, sectionHandle, lessonHandle}) {
   const section = course.curriculum.reference.sections.references.edges.find(
@@ -22,7 +23,7 @@ export function LessonContent({course, sectionHandle, lessonHandle}) {
           type="video/mp4"
         />
       </Player>
-      <p className="mt-4">{lesson.description.value}</p>
+      <RichTextDisplay content={lesson.description.value} className="mt-4" />
     </div>
   );
 }

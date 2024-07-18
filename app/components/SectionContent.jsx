@@ -20,7 +20,6 @@ export function SectionContent({course, sectionHandle}) {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">{section.title.value}</h2>
-      <RichTextDisplay content={section.description.value} />
       <ul className="mt-4">
         {lessons.map(({node: lesson}) => (
           <li key={lesson.title.value} className="mb-2">
@@ -34,6 +33,7 @@ export function SectionContent({course, sectionHandle}) {
           </li>
         ))}
       </ul>
+      <RichTextDisplay content={section.description.value} />
     </div>
   );
 }

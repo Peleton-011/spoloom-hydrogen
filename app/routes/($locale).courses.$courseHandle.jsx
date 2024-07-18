@@ -73,12 +73,6 @@ export const action = async ({request, params, context}) => {
 function getContent(course, currentSectionHandle, currentLessonHandle) {
   return (
     <div className="grid gap-8 md:col-span-2">
-      <div className="grid gap-4">
-        <Link to={`/courses/${course.handle}`}>
-          <h1 className="text-4xl font-bold leading-tight">{course.title}</h1>
-        </Link>
-      </div>
-
       {currentSectionHandle && currentLessonHandle ? (
         <LessonContent
           course={course}
@@ -140,14 +134,22 @@ export default function CourseRoute() {
   return (
     <div className="grid gap-8 px-6 md:px-8 lg:px-12">
       <div className="grid items-start gap-6 lg:gap-20 md:grid-cols-2 lg:grid-cols-3">
-        <div className="sticky md:mt-8 top-24 grid gap-6">
-          {getContent(course, currentSectionHandle, currentLessonHandle)}
-          <Curriculum
-            course={course}
-            currentSectionHandle={currentSectionHandle}
-            currentLessonHandle={currentLessonHandle}
-          />
+        <div className="md:mt-8 top-24 grid gap-6 col-span-2">
+          <div className="grid gap-4">
+            <Link to={`/courses/${course.handle}`}>
+              <h1 className="text-4xl font-bold leading-tight">
+                {course.title}
+              </h1>
+            </Link>
+          </div>
         </div>
+        {getContent(course, currentSectionHandle, currentLessonHandle)}
+        <Curriculum
+          className="col-span-1"
+          course={course}
+          currentSectionHandle={currentSectionHandle}
+          currentLessonHandle={currentLessonHandle}
+        />
       </div>
     </div>
   );

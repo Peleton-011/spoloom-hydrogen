@@ -1,16 +1,14 @@
 import React from 'react';
 import {Player} from 'video-react';
 import changeUrl from '~/custom-utils/changeUrl';
+import generateSlug from '~/custom-utils/generateSlug';
 
 export function LessonContent({course, sectionHandle, lessonHandle}) {
   const section = course.curriculum.reference.sections.references.edges.find(
-    (edge) =>
-      edge.node.title.value.toLowerCase().replace(/\s+/g, '-') ===
-      sectionHandle,
+    (edge) => generateSlug(edge.node.title.value) === sectionHandle,
   )?.node;
   const lesson = section?.lessons.references.edges.find(
-    (edge) =>
-      edge.node.title.value.toLowerCase().replace(/\s+/g, '-') === lessonHandle,
+    (edge) => generateSlug(edge.node.title.value) === lessonHandle,
   )?.node;
 
   if (!lesson) return <div>Lesson not found</div>;

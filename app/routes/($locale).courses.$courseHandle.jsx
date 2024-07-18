@@ -2,9 +2,12 @@ import {json, redirect} from '@shopify/remix-oxygen';
 import {useLoaderData, useActionData, Form} from '@remix-run/react';
 import {Image} from '@shopify/hydrogen';
 import {Curriculum} from '~/components/Curriculum';
+import {SectionContent} from '~/components/SectionContent';
+import {LessonContent} from '~/components/LessonContent';
+import COURSE_QUERY from '~/custom-utils/COURSE_QUERY';
 
 export const loader = async ({params, context, request}) => {
-  const {courseHandle} = params;
+  const {courseHandle, sectionHandle, lessonHandle} = params;
   const {product: course} = await context.storefront.query(COURSE_QUERY, {
     variables: {
       handle: courseHandle,
@@ -20,13 +23,51 @@ export const loader = async ({params, context, request}) => {
   const session = context.session;
   const hasAccess = session.hasCourseAccess(course.id);
 
-  console.log('#####################################################');
+  let currentSectionHandle = sectionHandle || '';
+  let currentLessonHandle = lessonHandle || '';
 
-  console.log(JSON.stringify(course, null, 2));
+  //   console.log(
+  //     course.curriculum.reference.sections.references.edges[0].node.title.value,
+  //   );
+
+  // If no section is selected, default to the first section
+  if (
+    !currentSectionHandle &&
+    course.curriculum?.reference?.sections?.references?.edges?.length > 0
+  ) {
+    currentSectionHandle =
+      course.curriculum.reference.sections.references.edges[0].node.title.value
+        .toLowerCase()
+        .replace(/\s+/g, '-');
+  }
+  //   console.log(currentSectionHandle);
+
+  // If a section is selected but no lesson, default to the first lesson of that section
+  if (currentSectionHandle && !currentLessonHandle) {
+    const currentSection =
+      course.curriculum?.reference?.sections?.references?.edges.find(
+        (edge) =>
+          edge.node.title.value.toLowerCase().replace(/\s+/g, '-') ===
+          currentSectionHandle,
+      );
+
+    if (currentSection?.node?.lessons?.references?.edges?.length > 0) {
+      currentLessonHandle =
+        currentSection.node.lessons.references.edges[0].node.title.value
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+    }
+  }
+
+  //   console.log('#####################################################');
+  //
+  //   console.log(JSON.stringify(course, null, 2));
 
   return json({
-    course,
+    course: {...course, handle: courseHandle},
     hasAccess,
+    currentSectionHandle,
+    currentLessonHandle,
   });
 };
 
@@ -43,7 +84,7 @@ export const action = async ({request, params, context}) => {
     },
   });
 
-  console.log(course);
+  //   console.log(course);
   const coursePassword = course.course_password?.value || 'ass';
 
   const session = context.session;
@@ -64,7 +105,8 @@ export const action = async ({request, params, context}) => {
 };
 
 export default function CourseRoute() {
-  const {course, hasAccess} = useLoaderData();
+  const {course, hasAccess, currentSectionHandle, currentLessonHandle} =
+    useLoaderData();
   const actionData = useActionData();
 
   if (!hasAccess) {
@@ -113,126 +155,34 @@ export default function CourseRoute() {
 
           <div dangerouslySetInnerHTML={{__html: course.descriptionHtml}} />
 
-          <Curriculum course={course} />
+          {currentSectionHandle && currentLessonHandle ? (
+            <LessonContent
+              course={course}
+              sectionHandle={currentSectionHandle}
+              lessonHandle={currentLessonHandle}
+            />
+          ) : currentSectionHandle ? (
+            <SectionContent
+              course={course}
+              sectionHandle={currentSectionHandle}
+            />
+          ) : (
+            <Curriculum
+              course={course}
+              currentSectionHandle={currentSectionHandle}
+              currentLessonHandle={currentLessonHandle}
+            />
+          )}
         </div>
 
-        <div className="sticky md:mt-8 top-24 grid gap-6"></div>
+        <div className="sticky md:mt-8 top-24 grid gap-6">
+          <Curriculum
+            course={course}
+            currentSectionHandle={currentSectionHandle}
+            currentLessonHandle={currentLessonHandle}
+          />
+        </div>
       </div>
     </div>
   );
 }
-
-const COURSE_QUERY = `#graphql
-  query CourseDetails($country: CountryCode, $language: LanguageCode, $handle: String!)
-  @inContext(country: $country, language: $language) {
-    product(handle: $handle) {
-      id
-      title
-      descriptionHtml
-      featuredImage {
-        id
-        url
-        altText
-        width
-        height
-      }
-      course_password:
-      metafield(
-        namespace: "courses", 
-        key: "course_password"
-      ) {
-        value
-        type
-      }
-      preview_video: metafield(
-        namespace: "courses", 
-        key: "preview_video"
-      ) {
-        value
-        reference {
-          ... on Video {
-            id
-            mediaContentType
-            sources {
-              url
-              mimeType
-              format
-              height
-              width
-            }
-          }
-        }
-      }
-      curriculum: metafield(
-        namespace: "courses", 
-        key: "curriculum"
-      ) {
-        value
-        reference {
-            ... on Metaobject {
-                title: field (key: "title") {
-                    value
-                }
-                sections: field (key: "sections") {
-                    value
-                    references(first: 10) {
-                        edges {
-                            node {
-                        ... on Metaobject {
-                            title: field (key: "title") {
-                                value
-                            }
-                            description: field (key: "description") {
-                                value
-                            }
-                            lessons: field (key: "lessons") {
-                                value
-                                references(first: 20) {
-                                    edges {
-                                        node {
-                                    ... on Metaobject {
-                                        title: field (key: "title") {
-                                            value
-                                        }
-                                        description: field (key: "description") {
-                                            value
-                                        }
-                                        duration: field (key: "duration") {
-                                            value
-                                        }
-                                        video: field (key: "video") {
-                                            value
-                                            reference {
-                                                ... on Video {
-                                                    id
-                                                    mediaContentType
-                                                    sources {
-                                                        url
-                                                        mimeType
-                                                        format
-                                                        height
-                                                        width
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                        }
-                    }
-                }
-                description: field (key: "description") {
-                  value
-                }
-            }
-        }
-      }
-    
-    }
-  }
-`;

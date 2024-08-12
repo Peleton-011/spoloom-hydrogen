@@ -161,7 +161,10 @@ export default function Homepage() {
   return (
     <>
       {primaryHero && (
+        <> 
+        <h1>SEXO</h1>
         <Hero {...primaryHero} height="full" top loading="eager" />
+        </>
       )}
 
       {featuredProducts && (
